@@ -112,6 +112,16 @@
                                          loading="lazy"
                                          style="max-width: 140px; display: block;"
                                          onerror="this.outerHTML = '<div style=\"color:var(--rwa-color-text-secondary);font-size:12px;padding:8px;\">Sticker unavailable</div>';">
+                                @elseif($msg->type === 'audio')
+                                    <div style="padding: 6px 8px; min-width: 240px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--rwa-color-text-secondary);">
+                                            <span>🎤 Voice Note</span>
+                                        </div>
+                                        <audio controls style="width: 100%; height: 32px;" preload="metadata"
+                                               src="{{ route('rich-whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}">
+                                            Your browser does not support the audio tag.
+                                        </audio>
+                                    </div>
                                 @else
                                     <div style="display: flex; align-items: center; gap: 10px; padding: 6px 10px;">
                                         <span style="font-size: 20px;">@if($msg->type === 'audio') 🎵 @elseif($msg->type === 'video') 🎬 @else 📄 @endif</span>
