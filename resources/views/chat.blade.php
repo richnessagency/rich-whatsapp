@@ -37,7 +37,7 @@
                         </div>
                         <div class="rwa-conv-details">
                             <div class="rwa-conv-header">
-                                <span class="rwa-conv-name">{{ $c->name }}</span>
+                                <span class="rwa-conv-name">{{ $c->isGroup ? $c->name : ($c->name === $c->phone() || is_numeric($c->name) ? '+' . $c->phone() : $c->name) }}</span>
                                 @if($c->lastMessageAt)
                                     <span class="rwa-conv-time">{{ (new DateTimeImmutable($c->lastMessageAt))->format('H:i') }}</span>
                                 @endif
@@ -73,7 +73,7 @@
                         <span style="font-size: 14px; font-weight: 600; color: var(--rwa-color-text-secondary);">{{ mb_substr($name, 0, 2) }}</span>
                     </div>
                     <div style="min-width: 0;">
-                        <h3 style="margin: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $name }}</h3>
+                        <h3 style="margin: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $isGroup ? $name : (is_numeric($name) ? '+' . $name : $name) }}</h3>
                         <span style="font-size: 12px; color: var(--rwa-color-text-secondary);">@if($isGroup) Group @else +{{ $phone }} @endif · {{ $history?->total ?? 0 }} messages</span>
                     </div>
                 </div>

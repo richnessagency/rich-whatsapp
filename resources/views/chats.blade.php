@@ -41,7 +41,7 @@
                         </div>
                         <div class="rwa-conv-details">
                             <div class="rwa-conv-header">
-                                <span class="rwa-conv-name">{{ $chat->name }}</span>
+                                <span class="rwa-conv-name">{{ $chat->isGroup ? $chat->name : ($chat->name === $chat->phone() || is_numeric($chat->name) ? '+' . $chat->phone() : $chat->name) }}</span>
                                 @if($chat->lastMessageAt)
                                     <span class="rwa-conv-time">{{ (new DateTimeImmutable($chat->lastMessageAt))->format('H:i') }}</span>
                                 @endif
