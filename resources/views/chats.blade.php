@@ -32,8 +32,12 @@
                        class="rwa-conv-item"
                        data-name="{{ strtolower($chat->name) }}"
                        data-phone="{{ $chat->phone() ?? $chat->jid }}">
-                        <div class="rwa-conv-avatar">
-                            {{ mb_substr($chat->name, 0, 2) }}
+                        <div class="rwa-conv-avatar" style="position: relative; overflow: hidden; background: #2a3942; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <img src="{{ route('rich-whatsapp.picture', ['jid' => $chat->jid]) }}" 
+                                 alt="" 
+                                 style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
+                                 onerror="this.style.display='none';">
+                            <span style="font-size: 14px; font-weight: 600; color: var(--rwa-color-text-secondary);">{{ mb_substr($chat->name, 0, 2) }}</span>
                         </div>
                         <div class="rwa-conv-details">
                             <div class="rwa-conv-header">

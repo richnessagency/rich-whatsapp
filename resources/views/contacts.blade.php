@@ -30,7 +30,13 @@
             <div style="flex: 1; overflow-y: auto;">
                 @forelse($contacts->items as $contact)
                     <a href="{{ route('rich-whatsapp.chat', ['jid' => $contact->jid]) }}" class="rwa-conv-item" style="display: flex; align-items: center;">
-                        <div class="rwa-conv-avatar">{{ mb_substr($contact->name, 0, 2) }}</div>
+                        <div class="rwa-conv-avatar" style="position: relative; overflow: hidden; background: #2a3942; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <img src="{{ route('rich-whatsapp.picture', ['jid' => $contact->jid]) }}" 
+                                 alt="" 
+                                 style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
+                                 onerror="this.style.display='none';">
+                            <span style="font-size: 14px; font-weight: 600; color: var(--rwa-color-text-secondary);">{{ mb_substr($contact->name, 0, 2) }}</span>
+                        </div>
                         <div class="rwa-conv-details" style="min-width: 0;">
                             <div class="rwa-conv-header">
                                 <span class="rwa-conv-name">{{ $contact->name }}</span>

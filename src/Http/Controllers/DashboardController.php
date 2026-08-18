@@ -50,7 +50,6 @@ class DashboardController extends Controller
         ]);
     }
 
-    /** Thread view for a single chat backed by the bridge history store. */
     public function chat(Request $request, string $jid)
     {
         if (! $this->service->enabled()) {
@@ -61,13 +60,15 @@ class DashboardController extends Controller
         $before = $request->query('before') ? (string) $request->query('before') : null;
 
         $history = $this->service->chatMessages($jid, $limit, $before);
-        $chat = collect($this->service->listChats($jid, 5, 0)->items)->first(
+        $chats = $this->service->listChats(null, 100, 0);
+        $chat = collect($chats->items)->first(
             static fn ($c) => $c->jid === $jid
         );
 
         return view('rich-whatsapp::chat', [
             'session' => $this->service->sessionStatus(),
             'history' => $history,
+            'chats' => $chats,
             'jid' => $jid,
             'name' => $chat?->name ?? $this->phoneFromJid($jid),
             'phone' => $this->phoneFromJid($jid),
