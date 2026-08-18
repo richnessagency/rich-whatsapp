@@ -24,12 +24,12 @@ class PhoneNumberService
 
         $value = trim($phone);
 
-        if ($value === '') {
-            throw InvalidPhoneNumberException::invalid($value, 'The phone number is empty.');
-        }
-
         if (str_contains($value, '@')) {
             return $value;
+        }
+
+        if ($value === '') {
+            throw InvalidPhoneNumberException::invalid($value, 'The phone number is empty.');
         }
 
         $explicitPlus = str_starts_with($value, '+');
