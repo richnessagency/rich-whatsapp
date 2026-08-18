@@ -27,6 +27,7 @@ final readonly class ChatMessage
         public ?float $longitude,
         public ?string $contactName,
         public bool $isMedia,
+        public bool $isSystem = false,
     ) {}
 
     public static function fromBridge(array $data): self
@@ -55,11 +56,16 @@ final readonly class ChatMessage
                 : null,
             contactName: isset($data['contact_name']) ? (string) $data['contact_name'] : null,
             isMedia: (bool) ($data['is_media'] ?? false),
+            isSystem: (bool) ($data['is_system'] ?? false),
         );
     }
 
     public function displayText(): string
     {
+        if ($this->isSystem) {
+            return $this->text ?? 'System notification';
+        }
+
         if ($this->isMedia) {
             $label = match ($this->type) {
                 'image' => '🖼️ Image',

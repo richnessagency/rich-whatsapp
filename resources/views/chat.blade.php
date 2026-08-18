@@ -122,6 +122,13 @@
                 @endif
 
                 @forelse(($history?->messages ?? []) as $msg)
+                    @if($msg->isSystem)
+                        <div class="rwa-message-system" style="text-align: center; margin: 8px 20px;">
+                            <span style="display: inline-block; padding: 4px 14px; border-radius: 8px; background: rgba(255,255,255,0.06); color: var(--rwa-color-text-secondary); font-size: 12px; line-height: 1.4;">
+                                {{ $msg->displayText() }}
+                            </span>
+                        </div>
+                    @else
                     <div class="rwa-message {{ $msg->fromMe ? 'rwa-message-out' : 'rwa-message-in' }}" data-mid="{{ $msg->id }}">
                         @if($msg->isMedia)
                             <div class="rwa-media-box" style="margin-bottom: 6px; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.15); padding: 4px; display: inline-block;">
@@ -172,6 +179,7 @@
                             @if($msg->fromMe)<span class="rwa-msg-status-tick">✓✓</span>@endif
                         </div>
                     </div>
+                    @endif
                 @empty
                     <div style="text-align: center; color: var(--rwa-color-text-secondary); padding-top: 40px;">
                         No messages in this chat yet.
