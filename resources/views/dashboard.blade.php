@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Dashboard - Rich WhatsApp</title>
     <link rel="stylesheet" href="{{ asset('vendor/rich-whatsapp/css/app.css') }}">
-    <style>
-        /* Fallback embedded support */
-        {!! file_get_contents(__DIR__ . '/../../css/app.css') !!}
-    </style>
 </head>
 <body class="rwa-wrapper">
     <header class="rwa-header">
