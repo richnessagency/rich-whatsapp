@@ -99,7 +99,14 @@
                     </div>
                     <div style="min-width: 0;">
                         <h3 style="margin: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $isGroup ? $name : (is_numeric($name) ? '+' . $name : $name) }}</h3>
-                        <span style="font-size: 12px; color: var(--rwa-color-text-secondary);">@if($isGroup) Group @else +{{ $phone }} @endif · {{ $history?->total ?? 0 }} messages</span>
+                        <span style="font-size: 12px; color: var(--rwa-color-text-secondary);">
+                            @if($isGroup)
+                                Group · <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; color: var(--rwa-primary); cursor: pointer; user-select: all;" title="Click to copy ID" onclick="navigator.clipboard.writeText('{{ $jid }}'); const tip = this.querySelector('.copy-tip'); tip.innerText = 'Copied!'; setTimeout(() => tip.innerText = 'Click to copy', 1500)">{{ $jid }} <span class="copy-tip" style="font-size: 9px; opacity: 0.6; margin-left: 4px;">(Click to copy)</span></code>
+                            @else
+                                +{{ $phone }}
+                            @endif
+                            · {{ $history?->total ?? 0 }} messages
+                        </span>
                     </div>
                 </div>
                 <div class="rwa-status-badge">
