@@ -19,6 +19,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Connection Keep-Alive & Stability
+    |--------------------------------------------------------------------------
+    |
+    | If your Node.js WhatsApp Bridge is running on a cPanel server (Phusion Passenger),
+    | it may spin down during idle periods. To keep the connection alive and prevent
+    | the bridge from sleeping, schedule the health check command in your application's
+    | scheduler (e.g. in `routes/console.php`):
+    |
+    |     use Illuminate\Support\Facades\Schedule;
+    |     Schedule::command('rich-whatsapp:health')->everyFiveMinutes();
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
     | Node Bridge connection
     |--------------------------------------------------------------------------
     |
