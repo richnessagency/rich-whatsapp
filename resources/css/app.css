@@ -30,11 +30,19 @@
     --rwa-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
+html, body {
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
 .rwa-wrapper {
     font-family: var(--rwa-font-sans);
     background-color: var(--rwa-bg-main);
     color: var(--rwa-color-text-primary);
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -51,9 +59,8 @@
     justify-content: space-between;
     align-items: center;
     backdrop-filter: var(--rwa-glass-blur);
-    position: sticky;
-    top: 0;
     z-index: 10;
+    flex-shrink: 0;
 }
 
 .rwa-logo-container {
@@ -108,7 +115,7 @@
 .rwa-main-container {
     display: flex;
     flex: 1;
-    height: calc(100vh - 60px);
+    min-height: 0;
     overflow: hidden;
     position: relative;
 }
