@@ -28,6 +28,10 @@ class PhoneNumberService
             throw InvalidPhoneNumberException::invalid($value, 'The phone number is empty.');
         }
 
+        if (str_contains($value, '@')) {
+            return $value;
+        }
+
         $explicitPlus = str_starts_with($value, '+');
         $explicitDoubleZero = str_starts_with($value, '00');
 
