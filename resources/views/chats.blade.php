@@ -20,6 +20,31 @@
 
     <main class="rwa-main-container">
         <aside class="rwa-sidebar">
+            <!-- User own profile header -->
+            <div class="rwa-sidebar-profile" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background-color: rgba(255,255,255,0.03); border-bottom: 1px solid var(--rwa-border-color); flex-shrink: 0;">
+                <div class="rwa-conv-avatar" style="width: 38px; height: 38px; position: relative; overflow: hidden; background: var(--rwa-primary); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                    @if($session->phone)
+                        <img src="{{ route('rich-whatsapp.picture', ['jid' => $session->phone . '@s.whatsapp.net']) }}" 
+                             alt="" 
+                             style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
+                             onerror="this.style.display='none';">
+                        <span style="font-size: 13px; font-weight: 700; color: #fff;">Me</span>
+                    @else
+                        <span style="font-size: 13px; font-weight: 700; color: #fff;">?</span>
+                    @endif
+                </div>
+                <div style="min-width: 0; flex: 1; text-align: left;">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--rwa-color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">My Account</div>
+                    <div style="font-size: 11px; color: var(--rwa-color-text-secondary);">
+                        @if($session->phone)
+                            +{{ $session->phone }}
+                        @else
+                            Not connected
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="rwa-search-box">
                 <form action="{{ route('rich-whatsapp.chats') }}" method="GET" style="display: flex; gap: 8px;">
                     <input type="text" name="q" value="{{ $currentQuery }}" class="rwa-search-input" placeholder="Search chats...">
