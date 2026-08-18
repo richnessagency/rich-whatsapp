@@ -1,0 +1,68 @@
+{
+    "name": "richnessagency/rich-whatsapp",
+    "description": "Laravel integration package and dashboard for a standalone WhatsApp Web Node.js bridge.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "whatsapp",
+        "whatsapp-web",
+        "notifications",
+        "messaging",
+        "rich-whatsapp"
+    ],
+    "authors": [
+        {
+            "name": "Richness Agency",
+            "homepage": "https://github.com/richnessagency"
+        }
+    ],
+    "homepage": "https://github.com/richnessagency/rich-whatsapp",
+    "support": {
+        "issues": "https://github.com/richnessagency/rich-whatsapp/issues",
+        "source": "https://github.com/richnessagency/rich-whatsapp"
+    },
+    "require": {
+        "php": "^8.3",
+        "illuminate/console": "^12.0|^13.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/database": "^12.0|^13.0",
+        "illuminate/events": "^12.0|^13.0",
+        "illuminate/http": "^12.0|^13.0",
+        "illuminate/notifications": "^12.0|^13.0",
+        "illuminate/routing": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0",
+        "illuminate/validation": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "laravel/framework": "^12.0|^13.0",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^10.0|^11.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RichnessAgency\\RichWhatsApp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RichnessAgency\\RichWhatsApp\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RichnessAgency\\RichWhatsApp\\RichWhatsAppServiceProvider"
+            ],
+            "aliases": {
+                "RichWhatsApp": "RichnessAgency\\RichWhatsApp\\Facades\\RichWhatsApp"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
