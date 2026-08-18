@@ -133,6 +133,59 @@ class WhatsAppBridgeClient implements BridgeClient
         ]);
     }
 
+    public function listContacts(?string $query = null, ?int $limit = null, ?int $offset = null): array
+    {
+        return $this->request('GET', '/api/v1/contacts'.$this->pageQuery($query, $limit, $offset));
+    }
+
+    public function listChats(?string $query = null, ?int $limit = null, ?int $offset = null): array
+    {
+        return $this->request('GET', '/api/v1/chats'.$this->pageQuery($query, $limit, $offset));
+    }
+
+    public function chatMessages(string $jid, ?int $limit = null, ?string $before = null): array
+    {
+        $params = [];
+        if ($limit !== null && $limit > 0) {
+            $params['limit'] = $limit;
+        }
+        if ($before !== null && $before !== '') {
+            $params['before'] = $before;
+        }
+
+        $query = $params === [] ? '' : '?'.http_build_query($params);
+
+        return $this->request('GET', '/api/v1/chats/'.rawurlencode($jid).'/messages'.$query);
+    }
+
+    public function chatMedia(string $jid, string $messageId): array
+    {
+        return $this->requestBinary(
+            '/api/v1/chats/'.rawurlencode($jid).'/messages/'.rawurlencode($messageId).'/media'
+        );
+    }
+
+    public function chatPicture(string $jid): array
+    {
+        return $this->requestBinary('/api/v1/chats/'.rawurlencode($jid).'/picture');
+    }
+
+    protected function pageQuery(?string $query, ?int $limit, ?int $offset): string
+    {
+        $params = [];
+        if ($query !== null && trim($query) !== '') {
+            $params['query'] = $query;
+        }
+        if ($limit !== null && $limit > 0) {
+            $params['limit'] = $limit;
+        }
+        if ($offset !== null && $offset > 0) {
+            $params['offset'] = $offset;
+        }
+
+        return $params === [] ? '' : '?'.http_build_query($params);
+    }
+
     // ------------------------------------------------------------ transport
 
     /**
@@ -195,6 +248,68 @@ class WhatsAppBridgeClient implements BridgeClient
         }
 
         return $body;
+    }
+
+    /**
+     * Performs a single authenticated non-JSON (binary) GET against the bridge
+     * and returns the raw body plus response metadata. Failure mapping matches
+     * `request()` so callers see the exact same exception types.
+     *
+     * @return array{body: string, content_type: string|null, filename: string|null}
+     */
+    protected function requestBinary(string $path): array
+    {
+        $baseUrl = config('rich-whatsapp.bridge_url', '');
+
+        if (! is_string($baseUrl) || $baseUrl === '') {
+            throw ConfigurationException::missing('RICH_WHATSAPP_BRIDGE_URL');
+        }
+
+        $token = (string) config('rich-whatsapp.bridge_token', '');
+
+        if ($token === '') {
+            throw ConfigurationException::missing('RICH_WHATSAPP_BRIDGE_TOKEN');
+        }
+
+        $url = rtrim($baseUrl, '/').$path;
+
+        try {
+            $response = Http::withToken($token)
+                ->timeout($this->timeouts['timeout'])
+                ->connectTimeout($this->timeouts['connect'])
+                ->get($url);
+        } catch (ConnectionException $e) {
+            throw BridgeUnavailableException::forRequest($path, $e->getMessage());
+        } catch (RequestException $e) {
+            $status = $e->response === null ? 0 : $e->response->status();
+
+            return $this->handleHttpFailure($path, $status, $this->bodyOf($e));
+        }
+
+        if ($response->status() !== 200) {
+            return $this->handleHttpFailure($path, $response->status(), $this->decode($response->body()));
+        }
+
+        $disposition = $response->header('Content-Disposition');
+
+        return [
+            'body' => $response->body(),
+            'content_type' => $response->header('Content-Type'),
+            'filename' => $this->dispositionFilename($disposition),
+        ];
+    }
+
+    protected function dispositionFilename(?string $disposition): ?string
+    {
+        if ($disposition === null) {
+            return null;
+        }
+
+        if (preg_match('/filename="?([^";]+)"?/i', $disposition, $m)) {
+            return $m[1];
+        }
+
+        return null;
     }
 
     /** @return array<string, mixed>|null */

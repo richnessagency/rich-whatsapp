@@ -423,6 +423,43 @@ dialog::backdrop {
 .rwa-gap-2 { gap: 8px; }
 .rwa-w-full { width: 100%; }
 
+/* Nav links + WhatsApp Web-style thread layout */
+.rwa-nav-link {
+    text-decoration: none;
+    color: var(--rwa-color-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.rwa-nav-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--rwa-color-text-primary);
+}
+.rwa-nav-link-active,
+.rwa-nav-link-active:hover {
+    background: rgba(0, 168, 132, 0.16);
+    color: var(--rwa-primary);
+}
+
+.rwa-thread-container {
+    flex-direction: column;
+}
+.rwa-thread-container .rwa-chat-header {
+    flex: none;
+}
+.rwa-thread-container .rwa-composer {
+    flex: none;
+}
+
+.rwa-contacts-list {
+    border-right: 1px solid var(--rwa-border-color);
+}
+.rwa-contacts-list a {
+    text-decoration: none;
+}
+
 @media (max-width: 768px) {
     .rwa-sidebar {
         position: absolute;

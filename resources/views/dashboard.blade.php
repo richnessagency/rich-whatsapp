@@ -12,6 +12,11 @@
             <div class="rwa-logo-icon">W</div>
             <div class="rwa-logo-text">Rich WhatsApp</div>
         </div>
+        <nav style="display: flex; gap: 4px; align-items: center;">
+            <a href="{{ route('rich-whatsapp.dashboard') }}" class="rwa-nav-link rwa-nav-link-active">Dashboard</a>
+            <a href="{{ route('rich-whatsapp.chats') }}" class="rwa-nav-link">Chats</a>
+            <a href="{{ route('rich-whatsapp.contacts') }}" class="rwa-nav-link">Contacts</a>
+        </nav>
         <div style="display: flex; gap: 16px; align-items: center;">
             <a href="{{ route('rich-whatsapp.settings') }}" class="rwa-button rwa-button-secondary" style="padding: 6px 14px;">Diagnostics</a>
             

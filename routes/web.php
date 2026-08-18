@@ -17,6 +17,13 @@ Route::group([
     Route::post('/logout', [DashboardController::class, 'logout'])->name('rich-whatsapp.logout');
     
     Route::get('/settings', [DashboardController::class, 'settings'])->name('rich-whatsapp.settings');
+
+    Route::get('/chats', [DashboardController::class, 'chats'])->name('rich-whatsapp.chats');
+    Route::get('/chats/{jid}', [DashboardController::class, 'chat'])->name('rich-whatsapp.chat');
+    Route::get('/chats/{jid}/messages/{messageId}/media', [DashboardController::class, 'media'])->name('rich-whatsapp.media');
+    Route::get('/chats/{jid}/picture', [DashboardController::class, 'picture'])->name('rich-whatsapp.picture');
+
+    Route::get('/contacts', [DashboardController::class, 'contacts'])->name('rich-whatsapp.contacts');
     
     Route::post('/messages/send', [DashboardController::class, 'sendMessage'])->name('rich-whatsapp.messages.send');
     Route::post('/contacts/check', [DashboardController::class, 'checkContact'])->name('rich-whatsapp.contacts.check');

@@ -32,4 +32,24 @@ interface BridgeClient
     public function messageStatus(string $requestId): array;
 
     public function checkContact(string $phone): array;
+
+    public function listContacts(?string $query = null, ?int $limit = null, ?int $offset = null): array;
+
+    public function listChats(?string $query = null, ?int $limit = null, ?int $offset = null): array;
+
+    public function chatMessages(string $jid, ?int $limit = null, ?string $before = null): array;
+
+    /**
+     * Downloads a media message body from the bridge.
+     *
+     * @return array{body: string, content_type: string|null, filename: string|null}
+     */
+    public function chatMedia(string $jid, string $messageId): array;
+
+    /**
+     * Downloads a chat profile picture from the bridge.
+     *
+     * @return array{body: string, content_type: string|null, filename: string|null}
+     */
+    public function chatPicture(string $jid): array;
 }

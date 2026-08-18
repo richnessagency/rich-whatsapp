@@ -184,4 +184,184 @@ class WhatsAppServiceTest extends TestCase
         $registered = $this->service->checkContact('201012345678');
         $this->assertTrue($registered);
     }
+
+    public function test_list_chats_maps_bridge_payload_to_chat_info(): void
+    {
+        $this->clientMock->shouldReceive('listChats')
+            ->once()
+            ->with(null, 100, 0)
+            ->andReturn([
+                'success' => true,
+                'data' => [
+                    'items' => [
+                        [
+                            'jid' => '201012345678@s.whatsapp.net',
+                            'is_group' => false,
+                            'name' => 'Ahmed',
+                            'unread_count' => 2,
+                            'last_message' => ['id' => 'a1', 'from_me' => false, 'text' => 'hi'],
+                            'last_message_at' => '2026-08-18T01:00:00Z',
+                        ],
+                    ],
+                    'total' => 1,
+                    'limit' => 100,
+                    'offset' => 0,
+                ],
+            ]);
+
+        $page = $this->service->listChats(null, 100, 0);
+
+        $this->assertEquals(1, $page->total);
+        $this->assertCount(1, $page->items);
+        $this->assertEquals('Ahmed', $page->items[0]->name);
+        $this->assertEquals('201012345678', $page->items[0]->phone());
+        $this->assertEquals(2, $page->items[0]->unreadCount);
+    }
+
+    public function test_list_chats_returns_empty_when_bridge_offline(): void
+    {
+        $this->clientMock->shouldReceive('listChats')
+            ->once()
+            ->andThrow(new BridgeUnavailableException('Bridge is offline'));
+
+        $page = $this->service->listChats();
+
+        $this->assertEquals(0, $page->total);
+        $this->assertEmpty($page->items);
+    }
+
+    public function test_list_contacts_maps_bridge_payload_to_contact_info(): void
+    {
+        $this->clientMock->shouldReceive('listContacts')
+            ->once()
+            ->with('sara', 200, 0)
+            ->andReturn([
+                'success' => true,
+                'data' => [
+                    'items' => [
+                        [
+                            'jid' => '201098765432@s.whatsapp.net',
+                            'lid' => null,
+                            'name' => 'Sara',
+                            'notify' => 'Sara',
+                            'verified_name' => null,
+                            'status' => 'Hey there!',
+                            'phone' => '201098765432',
+                        ],
+                    ],
+                    'total' => 1,
+                    'limit' => 200,
+                    'offset' => 0,
+                ],
+            ]);
+
+        $page = $this->service->listContacts('sara', 200, 0);
+
+        $this->assertEquals(1, $page->total);
+        $this->assertEquals('Sara', $page->items[0]->name);
+        $this->assertEquals('201098765432', $page->items[0]->phone);
+        $this->assertEquals('Hey there!', $page->items[0]->status);
+    }
+
+    public function test_chat_messages_maps_bridge_history_to_dtos(): void
+    {
+        $this->clientMock->shouldReceive('chatMessages')
+            ->once()
+            ->with('201012345678@s.whatsapp.net', 50, null)
+            ->andReturn([
+                'success' => true,
+                'data' => [
+                    'jid' => '201012345678@s.whatsapp.net',
+                    'messages' => [
+                        [
+                            'id' => 'wa-1',
+                            'from_me' => false,
+                            'from' => '201012345678@s.whatsapp.net',
+                            'participant' => null,
+                            'timestamp' => '2026-08-18T01:00:00Z',
+                            'type' => 'text',
+                            'text' => 'Hello!',
+                            'is_media' => false,
+                        ],
+                        [
+                            'id' => 'wa-2',
+                            'from_me' => false,
+                            'from' => '201012345678@s.whatsapp.net',
+                            'participant' => null,
+                            'timestamp' => '2026-08-18T01:01:00Z',
+                            'type' => 'image',
+                            'text' => null,
+                            'caption' => 'selfie',
+                            'mimetype' => 'image/jpeg',
+                            'filename' => null,
+                            'duration' => null,
+                            'latitude' => null,
+                            'longitude' => null,
+                            'contact_name' => null,
+                            'is_media' => true,
+                        ],
+                    ],
+                    'has_more' => false,
+                    'next_cursor' => null,
+                    'total' => 2,
+                ],
+            ]);
+
+        $history = $this->service->chatMessages('201012345678@s.whatsapp.net', 50);
+
+        $this->assertNotNull($history);
+        $this->assertEquals(2, $history->total);
+        $this->assertCount(2, $history->messages);
+        $this->assertFalse($history->messages[0]->isMedia);
+        $this->assertEquals('Hello!', $history->messages[0]->displayText());
+        $this->assertTrue($history->messages[1]->isMedia);
+        $this->assertEquals('image', $history->messages[1]->type);
+        $this->assertFalse($history->hasMore);
+        $this->assertStringContainsString('Image', $history->messages[1]->displayText());
+    }
+
+    public function test_chat_media_returns_binary_payload(): void
+    {
+        $this->clientMock->shouldReceive('chatMedia')
+            ->once()
+            ->with('201012345678@s.whatsapp.net', 'wa-2')
+            ->andReturn([
+                'body' => 'actual-bytes',
+                'content_type' => 'image/jpeg',
+                'filename' => 'photo.jpg',
+            ]);
+
+        $media = $this->service->chatMedia('201012345678@s.whatsapp.net', 'wa-2');
+
+        $this->assertNotNull($media);
+        $this->assertEquals('actual-bytes', $media['body']);
+        $this->assertEquals('image/jpeg', $media['content_type']);
+    }
+
+    public function test_chat_media_returns_null_when_unavailable(): void
+    {
+        $this->clientMock->shouldReceive('chatMedia')
+            ->once()
+            ->andThrow(new WhatsAppDisconnectedException());
+
+        $this->assertNull($this->service->chatMedia('201012345678@s.whatsapp.net', 'wa-2'));
+    }
+
+    public function test_chat_picture_returns_binary_payload(): void
+    {
+        $this->clientMock->shouldReceive('chatPicture')
+            ->once()
+            ->with('201012345678@s.whatsapp.net')
+            ->andReturn([
+                'body' => 'avatar',
+                'content_type' => 'image/jpeg',
+                'filename' => null,
+            ]);
+
+        $picture = $this->service->chatPicture('201012345678@s.whatsapp.net');
+
+        $this->assertNotNull($picture);
+        $this->assertEquals('avatar', $picture['body']);
+        $this->assertEquals('image/jpeg', $picture['content_type']);
+    }
 }

@@ -1,0 +1,77 @@
+@php
+    /** @var \RichnessAgency\RichWhatsApp\DTOs\PagedList $chats */
+@endphp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chats - Rich WhatsApp</title>
+    <link rel="stylesheet" href="{{ asset('vendor/rich-whatsapp/css/app.css') }}">
+</head>
+<body class="rwa-wrapper">
+    @include('rich-whatsapp::partials.header', ['rwaActiveNav' => 'chats'])
+
+    @if(! $session->status->isConnected())
+        <div style="background-color: var(--rwa-danger); color: #fff; padding: 10px 24px; font-weight: 500; font-size: 14px;">
+            <span>WhatsApp is disconnected — history is only available from the bridge while connected.</span>
+        </div>
+    @endif
+
+    <main class="rwa-main-container">
+        <aside class="rwa-sidebar">
+            <div class="rwa-search-box">
+                <form action="{{ route('rich-whatsapp.chats') }}" method="GET" style="display: flex; gap: 8px;">
+                    <input type="text" name="q" value="{{ $currentQuery }}" class="rwa-search-input" placeholder="Search chats...">
+                    <button type="submit" class="rwa-button rwa-button-secondary" style="padding: 6px 12px;">Search</button>
+                </form>
+            </div>
+            <div class="rwa-conv-list">
+                @forelse($chats->items as $chat)
+                    <a href="{{ route('rich-whatsapp.chat', ['jid' => $chat->jid]) }}"
+                       class="rwa-conv-item"
+                       data-name="{{ strtolower($chat->name) }}"
+                       data-phone="{{ $chat->phone() ?? $chat->jid }}">
+                        <div class="rwa-conv-avatar">
+                            {{ mb_substr($chat->name, 0, 2) }}
+                        </div>
+                        <div class="rwa-conv-details">
+                            <div class="rwa-conv-header">
+                                <span class="rwa-conv-name">{{ $chat->name }}</span>
+                                @if($chat->lastMessageAt)
+                                    <span class="rwa-conv-time">{{ (new DateTimeImmutable($chat->lastMessageAt))->format('H:i') }}</span>
+                                @endif
+                            </div>
+                            <div class="rwa-conv-header" style="margin-top: 2px;">
+                                <span class="rwa-conv-preview">
+                                    {{ $chat->lastMessage ? $chat->lastMessage['from_me'] ? 'You: ' . ($chat->lastMessage['text'] ?? '📎') : ($chat->lastMessage['text'] ?? '📎') : 'No messages yet' }}
+                                </span>
+                                @if($chat->unreadCount > 0)
+                                    <span class="rwa-conv-badge">{{ $chat->unreadCount }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @empty
+                    <div style="padding: 24px; text-align: center; color: var(--rwa-color-text-secondary); font-size: 14px;">
+                        @if($currentQuery !== '')
+                            No chats match "{{ $currentQuery }}".
+                        @else
+                            No chats yet. Connect the WhatsApp session to sync chats, contacts and message history.
+                        @endif
+                    </div>
+                @endforelse
+            </div>
+        </aside>
+
+        <section class="rwa-chat-pane">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--rwa-color-text-secondary); background:
+                @if($session->status->isConnected()) linear-gradient(180deg, #004d40 0%, #009688 100%) @else var(--rwa-bg-panel) @endif;">
+                <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.5;">💬</div>
+                <h3 style="color: #e0f2f1; font-weight: 400;">WhatsApp Web-style chat history</h3>
+                <p style="font-size: 14px; color: #b2dfdb;">Pick a conversation to view its full message history.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

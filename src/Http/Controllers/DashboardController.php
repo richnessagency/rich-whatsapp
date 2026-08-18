@@ -27,40 +27,102 @@ class DashboardController extends Controller
 
         $session = $this->service->sessionStatus();
 
-        // Get conversations paginated
-        $conversations = RichWhatsAppConversation::query()
-            ->orderByDesc('last_message_at')
-            ->paginate(30);
-
-        $activeConversation = null;
-        $messages = collect();
-
-        if ($request->has('chat')) {
-            $activeConversation = RichWhatsAppConversation::query()
-                ->where('whatsapp_chat_id', $request->query('chat'))
-                ->orWhere('id', $request->query('chat'))
-                ->first();
-
-            if ($activeConversation) {
-                // Mark read
-                $activeConversation->markRead();
-
-                // Get messages paginated (latest first, but we display them in chronological order)
-                $messages = $activeConversation->messages()
-                    ->orderByDesc('occurred_at')
-                    ->paginate(50);
-                
-                // Reverse to show chronologically in view
-                $messages = collect($messages->items())->reverse();
-            }
+        if ($session->status->isConnected()) {
+            return redirect()->route('rich-whatsapp.chats');
         }
 
-        return view('rich-whatsapp::dashboard', [
-            'session' => $session,
-            'conversations' => $conversations,
-            'activeConversation' => $activeConversation,
-            'messages' => $messages,
+        return redirect()->route('rich-whatsapp.connect');
+    }
+
+    /** WhatsApp Web-style full-height chats list (live from the bridge). */
+    public function chats(Request $request)
+    {
+        if (! $this->service->enabled()) {
+            abort(404, 'Rich WhatsApp is disabled.');
+        }
+
+        $query = trim((string) $request->query('q', ''));
+
+        return view('rich-whatsapp::chats', [
+            'session' => $this->service->sessionStatus(),
+            'chats' => $this->service->listChats($query !== '' ? $query : null, 100, 0),
+            'currentQuery' => $query,
         ]);
+    }
+
+    /** Thread view for a single chat backed by the bridge history store. */
+    public function chat(Request $request, string $jid)
+    {
+        if (! $this->service->enabled()) {
+            abort(404, 'Rich WhatsApp is disabled.');
+        }
+
+        $limit = (int) ($request->query('limit', 50));
+        $before = $request->query('before') ? (string) $request->query('before') : null;
+
+        $history = $this->service->chatMessages($jid, $limit, $before);
+        $chat = collect($this->service->listChats($jid, 5, 0)->items)->first(
+            static fn ($c) => $c->jid === $jid
+        );
+
+        return view('rich-whatsapp::chat', [
+            'session' => $this->service->sessionStatus(),
+            'history' => $history,
+            'jid' => $jid,
+            'name' => $chat?->name ?? $this->phoneFromJid($jid),
+            'phone' => $this->phoneFromJid($jid),
+            'isGroup' => str_contains($jid, '@g.us'),
+            'limit' => $limit,
+        ]);
+    }
+
+    /** Contacts browser (live from the bridge). */
+    public function contacts(Request $request)
+    {
+        if (! $this->service->enabled()) {
+            abort(404, 'Rich WhatsApp is disabled.');
+        }
+
+        $query = trim((string) $request->query('q', ''));
+
+        return view('rich-whatsapp::contacts', [
+            'session' => $this->service->sessionStatus(),
+            'contacts' => $this->service->listContacts($query !== '' ? $query : null, 200, 0),
+            'currentQuery' => $query,
+        ]);
+    }
+
+    /** Streams a single message's media through the bridge (binary). */
+    public function media(string $jid, string $messageId)
+    {
+        $data = $this->service->chatMedia($jid, $messageId);
+
+        if ($data === null) {
+            abort(404, 'Media unavailable.');
+        }
+
+        return response($data['body'], 200, [
+            'Content-Type' => $data['content_type'] ?: 'application/octet-stream',
+        ])->setCache(['private' => true, 'max_age' => 300]);
+    }
+
+    /** Streams a chat profile picture through the bridge (binary). */
+    public function picture(string $jid)
+    {
+        $data = $this->service->chatPicture($jid);
+
+        if ($data === null) {
+            abort(404, 'No profile picture available.');
+        }
+
+        return response($data['body'], 200, [
+            'Content-Type' => $data['content_type'] ?: 'image/jpeg',
+        ])->setCache(['private' => true, 'max_age' => 300]);
+    }
+
+    protected function phoneFromJid(string $jid): string
+    {
+        return explode('@', $jid, 2)[0];
     }
 
     public function connect(Request $request)
@@ -167,7 +229,7 @@ class DashboardController extends Controller
 
         $chatId = $phone . '@s.whatsapp.net';
 
-        return redirect()->route('rich-whatsapp.dashboard', ['chat' => $chatId]);
+        return redirect()->route('rich-whatsapp.chat', ['jid' => $chatId]);
     }
 
     public function checkContact(Request $request)

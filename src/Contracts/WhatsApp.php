@@ -8,6 +8,8 @@ use RichnessAgency\RichWhatsApp\DTOs\HealthReport;
 use RichnessAgency\RichWhatsApp\DTOs\MessageResult;
 use RichnessAgency\RichWhatsApp\DTOs\QrData;
 use RichnessAgency\RichWhatsApp\DTOs\SessionInfo;
+use RichnessAgency\RichWhatsApp\DTOs\PagedList;
+use RichnessAgency\RichWhatsApp\DTOs\ChatHistory;
 use RichnessAgency\RichWhatsApp\Enums\MediaType;
 
 /**
@@ -43,4 +45,27 @@ interface WhatsApp
     public function checkContact(string $phone): bool;
 
     public function health(): HealthReport;
+
+    /** WhatsApp Web-style chats list (items are ChatInfo[]). */
+    public function listChats(?string $query = null, ?int $limit = null, ?int $offset = null): PagedList;
+
+    /** WhatsApp Web-style contacts list (items are ContactInfo[]). */
+    public function listContacts(?string $query = null, ?int $limit = null, ?int $offset = null): PagedList;
+
+    /** Message history for a single chat, oldest → newest. */
+    public function chatMessages(string $jid, ?int $limit = null, ?string $before = null): ?ChatHistory;
+
+    /**
+     * Downloads a media message body through the bridge.
+     *
+     * @return array{body: string, content_type: string|null, filename: string|null}|null
+     */
+    public function chatMedia(string $jid, string $messageId): ?array;
+
+    /**
+     * Downloads a chat profile picture through the bridge.
+     *
+     * @return array{body: string, content_type: string|null, filename: string|null}|null
+     */
+    public function chatPicture(string $jid): ?array;
 }

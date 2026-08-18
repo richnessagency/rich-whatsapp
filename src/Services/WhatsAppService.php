@@ -11,6 +11,11 @@ use RichnessAgency\RichWhatsApp\DTOs\HealthReport;
 use RichnessAgency\RichWhatsApp\DTOs\MessageResult;
 use RichnessAgency\RichWhatsApp\DTOs\QrData;
 use RichnessAgency\RichWhatsApp\DTOs\SessionInfo;
+use RichnessAgency\RichWhatsApp\DTOs\PagedList;
+use RichnessAgency\RichWhatsApp\DTOs\ChatInfo;
+use RichnessAgency\RichWhatsApp\DTOs\ContactInfo;
+use RichnessAgency\RichWhatsApp\DTOs\ChatMessage;
+use RichnessAgency\RichWhatsApp\DTOs\ChatHistory;
 use RichnessAgency\RichWhatsApp\Enums\MediaType;
 use RichnessAgency\RichWhatsApp\Enums\SessionStatus;
 use RichnessAgency\RichWhatsApp\Enums\MessageStatus;
@@ -358,6 +363,79 @@ class WhatsAppService implements WhatsApp
                 callbackBacklog: 0,
                 lastActivityAt: null
             );
+        }
+    }
+
+    // ------------------------------------------------ WhatsApp Web read API
+
+    public function listChats(?string $query = null, ?int $limit = null, ?int $offset = null): PagedList
+    {
+        if (! $this->enabled() || ! $this->bridgeConfigured()) {
+            return PagedList::empty($limit ?? 50, $offset ?? 0);
+        }
+
+        try {
+            return PagedList::fromBridge(
+                $this->client->listChats($query, $limit, $offset),
+                static fn (array $row): ChatInfo => ChatInfo::fromBridge($row)
+            );
+        } catch (\Exception) {
+            return PagedList::empty($limit ?? 50, $offset ?? 0);
+        }
+    }
+
+    public function listContacts(?string $query = null, ?int $limit = null, ?int $offset = null): PagedList
+    {
+        if (! $this->enabled() || ! $this->bridgeConfigured()) {
+            return PagedList::empty($limit ?? 50, $offset ?? 0);
+        }
+
+        try {
+            return PagedList::fromBridge(
+                $this->client->listContacts($query, $limit, $offset),
+                static fn (array $row): ContactInfo => ContactInfo::fromBridge($row)
+            );
+        } catch (\Exception) {
+            return PagedList::empty($limit ?? 50, $offset ?? 0);
+        }
+    }
+
+    public function chatMessages(string $jid, ?int $limit = null, ?string $before = null): ?ChatHistory
+    {
+        if (! $this->enabled() || ! $this->bridgeConfigured() || $jid === '') {
+            return null;
+        }
+
+        try {
+            return ChatHistory::fromBridge($this->client->chatMessages($jid, $limit, $before));
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
+    public function chatMedia(string $jid, string $messageId): ?array
+    {
+        if (! $this->enabled() || ! $this->bridgeConfigured() || $jid === '' || $messageId === '') {
+            return null;
+        }
+
+        try {
+            return $this->client->chatMedia($jid, $messageId);
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
+    public function chatPicture(string $jid): ?array
+    {
+        if (! $this->enabled() || ! $this->bridgeConfigured() || $jid === '') {
+            return null;
+        }
+
+        try {
+            return $this->client->chatPicture($jid);
+        } catch (\Exception) {
+            return null;
         }
     }
 }
