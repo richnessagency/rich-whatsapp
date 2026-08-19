@@ -45,6 +45,11 @@ class PhoneNumberServiceTest extends TestCase
         $this->service->normalize('01012345678', '');
     }
 
+    public function test_does_not_prepend_country_code_to_already_international_number_without_plus(): void
+    {
+        $this->assertEquals('62783932608736', $this->service->normalize('62783932608736', '20'));
+    }
+
     public function test_rejects_empty_input(): void
     {
         $this->expectException(InvalidPhoneNumberException::class);

@@ -80,9 +80,10 @@ class PhoneNumberService
 
         // Already international (starts with the default country code) or a
         // local number without leading zero. Prepend when needed.
-        $normalized = str_starts_with($digits, $defaultCountryCode)
-            ? $digits
-            : $defaultCountryCode.$digits;
+        $normalized = $digits;
+        if (! str_starts_with($digits, $defaultCountryCode) && strlen($digits) < 11) {
+            $normalized = $defaultCountryCode.$digits;
+        }
 
         return $this->validateInternational($normalized, $value);
     }
