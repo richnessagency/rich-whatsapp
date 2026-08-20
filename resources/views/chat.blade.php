@@ -20,7 +20,7 @@
             <div class="rwa-sidebar-profile" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background-color: rgba(255,255,255,0.03); border-bottom: 1px solid var(--rwa-border-color); flex-shrink: 0;">
                 <div class="rwa-conv-avatar" style="width: 38px; height: 38px; position: relative; overflow: hidden; background: var(--rwa-primary); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                     @if($session->phone)
-                        <img src="{{ route('rich-whatsapp.picture', ['jid' => $session->phone . '@s.whatsapp.net']) }}" 
+                        <img src="{{ route('admin.whatsapp.picture', ['jid' => $session->phone . '@s.whatsapp.net']) }}" 
                              alt="" 
                              style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
                              onerror="this.style.display='none';">
@@ -42,19 +42,19 @@
             </div>
 
             <div class="rwa-search-box">
-                <form action="{{ route('rich-whatsapp.chats') }}" method="GET" style="display: flex; gap: 8px;">
+                <form action="{{ route('admin.whatsapp.chats') }}" method="GET" style="display: flex; gap: 8px;">
                     <input type="text" name="q" value="" class="rwa-search-input" placeholder="Search chats...">
                     <button type="submit" class="rwa-button rwa-button-secondary" style="padding: 6px 12px;">Search</button>
                 </form>
             </div>
             <div class="rwa-conv-list">
                 @forelse($chats->items as $c)
-                    <a href="{{ route('rich-whatsapp.chat', ['jid' => $c->jid]) }}"
+                    <a href="{{ route('admin.whatsapp.chat', ['jid' => $c->jid]) }}"
                        class="rwa-conv-item {{ $jid === $c->jid ? 'rwa-active' : '' }}"
                        data-name="{{ strtolower($c->name) }}"
                        data-phone="{{ $c->phone() ?? $c->jid }}">
                         <div class="rwa-conv-avatar" style="position: relative; overflow: hidden; background: #2a3942; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                            <img src="{{ route('rich-whatsapp.picture', ['jid' => $c->jid]) }}" 
+                            <img src="{{ route('admin.whatsapp.picture', ['jid' => $c->jid]) }}" 
                                  alt="" 
                                  style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
                                  onerror="this.style.display='none';">
@@ -91,7 +91,7 @@
             <div class="rwa-chat-header" style="flex: none; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
                 <div class="rwa-chat-title-info" style="display: flex; align-items: center; gap: 12px; min-width: 0;">
                     <div class="rwa-conv-avatar" style="width: 40px; height: 40px; position: relative; overflow: hidden; background: #2a3942; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                        <img src="{{ route('rich-whatsapp.picture', ['jid' => $jid]) }}"
+                        <img src="{{ route('admin.whatsapp.picture', ['jid' => $jid]) }}"
                              alt=""
                              style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
                              onerror="this.style.display='none';">
@@ -123,7 +123,7 @@
             <div class="rwa-chat-messages-container" id="chat-messages" data-jid="{{ $jid }}" data-name="{{ $name }}" data-phone="{{ $phone }}">
                 @if($history && $history->hasMore)
                     <div style="text-align: center; margin: 12px 0;">
-                        <a href="{{ route('rich-whatsapp.chat', ['jid' => $jid, 'before' => $history->nextCursor]) }}"
+                        <a href="{{ route('admin.whatsapp.chat', ['jid' => $jid, 'before' => $history->nextCursor]) }}"
                            class="rwa-button rwa-button-secondary" style="padding: 6px 14px; font-size: 12px;">↩ Load older messages</a>
                     </div>
                 @endif
@@ -140,13 +140,13 @@
                         @if($msg->isMedia)
                             <div class="rwa-media-box" style="margin-bottom: 6px; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.15); padding: 4px; display: inline-block;">
                                 @if($msg->type === 'image')
-                                    <img src="{{ route('rich-whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}"
+                                    <img src="{{ route('admin.whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}"
                                          alt="{{ $msg->caption ?: 'Image' }}"
                                          loading="lazy"
                                          style="max-width: 100%; max-height: 280px; display: block; border-radius: 4px; cursor: pointer;"
                                          onclick="window.open(this.src)">
                                 @elseif($msg->type === 'sticker')
-                                    <img src="{{ route('rich-whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}"
+                                    <img src="{{ route('admin.whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}"
                                          alt="Sticker"
                                          loading="lazy"
                                          style="max-width: 140px; display: block;"
@@ -157,7 +157,7 @@
                                             <span>🎤 Voice Note</span>
                                         </div>
                                         <audio controls style="width: 100%; height: 32px;" preload="metadata"
-                                               src="{{ route('rich-whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}">
+                                               src="{{ route('admin.whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}">
                                             Your browser does not support the audio tag.
                                         </audio>
                                     </div>
@@ -165,7 +165,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px; padding: 6px 10px;">
                                         <span style="font-size: 20px;">@if($msg->type === 'audio') 🎵 @elseif($msg->type === 'video') 🎬 @else 📄 @endif</span>
                                         <div style="min-width: 0; text-align: left;">
-                                            <a href="{{ route('rich-whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}" target="_blank" style="font-weight: 500; font-size: 13px; text-decoration: none; color: var(--rwa-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block;">
+                                            <a href="{{ route('admin.whatsapp.media', ['jid' => $jid, 'messageId' => $msg->id]) }}" target="_blank" style="font-weight: 500; font-size: 13px; text-decoration: none; color: var(--rwa-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block;">
                                                 {{ $msg->filename ?: ucfirst($msg->type) }}
                                             </a>
                                             <div style="font-size: 11px; color: var(--rwa-color-text-secondary);">{{ $msg->mimetype ?: strtoupper($msg->type) }}</div>
@@ -196,7 +196,7 @@
 
             <!-- Composer Form -->
             <div class="rwa-composer">
-                <form action="{{ route('rich-whatsapp.messages.send') }}" method="POST" enctype="multipart/form-data" class="rwa-composer-form">
+                <form action="{{ route('admin.whatsapp.messages.send') }}" method="POST" enctype="multipart/form-data" class="rwa-composer-form">
                     @csrf
                     <input type="hidden" name="phone" value="{{ $phone }}">
                     <label for="media-file" style="cursor: pointer; padding: 8px; font-size: 20px; background: transparent; border: none; display: flex; align-items: center;" title="Attach File">

@@ -13,19 +13,19 @@
             <div class="rwa-logo-text">Rich WhatsApp</div>
         </div>
         <nav style="display: flex; gap: 4px; align-items: center;">
-            <a href="{{ route('rich-whatsapp.dashboard') }}" class="rwa-nav-link rwa-nav-link-active">Dashboard</a>
-            <a href="{{ route('rich-whatsapp.chats') }}" class="rwa-nav-link">Chats</a>
-            <a href="{{ route('rich-whatsapp.contacts') }}" class="rwa-nav-link">Contacts</a>
+            <a href="{{ route('admin.whatsapp.index') }}" class="rwa-nav-link rwa-nav-link-active">Dashboard</a>
+            <a href="{{ route('admin.whatsapp.chats') }}" class="rwa-nav-link">Chats</a>
+            <a href="{{ route('admin.whatsapp.contacts') }}" class="rwa-nav-link">Contacts</a>
         </nav>
         <div style="display: flex; gap: 16px; align-items: center;">
-            <a href="{{ route('rich-whatsapp.settings') }}" class="rwa-button rwa-button-secondary" style="padding: 6px 14px;">Diagnostics</a>
+            <a href="{{ route('admin.whatsapp.settings') }}" class="rwa-button rwa-button-secondary" style="padding: 6px 14px;">Diagnostics</a>
             
             <button onclick="document.getElementById('new-msg-dialog').showModal();" class="rwa-button" style="padding: 6px 14px;">+ New Chat</button>
 
             @if($session->status->isConnected())
                 <button onclick="document.getElementById('logout-dialog').showModal();" class="rwa-button rwa-button-danger" style="padding: 6px 14px;">Logout</button>
             @else
-                <a href="{{ route('rich-whatsapp.connect') }}" class="rwa-button" style="padding: 6px 14px;">Connect</a>
+                <a href="{{ route('admin.whatsapp.connect') }}" class="rwa-button" style="padding: 6px 14px;">Connect</a>
             @endif
 
             <div class="rwa-status-badge">
@@ -39,11 +39,11 @@
         <div style="background-color: var(--rwa-danger); color: #fff; padding: 10px 24px; font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
             <span>WhatsApp is currently disconnected. Outgoing messages will be queued.</span>
             <div style="display: flex; gap: 12px;">
-                <form action="{{ route('rich-whatsapp.reconnect') }}" method="POST" style="display: inline;">
+                <form action="{{ route('admin.whatsapp.reconnect') }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="rwa-button rwa-button-secondary" style="padding: 4px 10px; font-size: 12px; background: rgba(255,255,255,0.2); border: none;">Reconnect</button>
                 </form>
-                <a href="{{ route('rich-whatsapp.connect') }}" class="rwa-button" style="padding: 4px 10px; font-size: 12px; background: #fff; color: var(--rwa-danger);">Scan QR</a>
+                <a href="{{ route('admin.whatsapp.connect') }}" class="rwa-button" style="padding: 4px 10px; font-size: 12px; background: #fff; color: var(--rwa-danger);">Scan QR</a>
             </div>
         </div>
     @endif
@@ -56,7 +56,7 @@
             </div>
             <div class="rwa-conv-list">
                 @forelse($conversations as $conv)
-                    <a href="{{ route('rich-whatsapp.dashboard', ['chat' => $conv->whatsapp_chat_id]) }}" 
+                    <a href="{{ route('admin.whatsapp.index', ['chat' => $conv->whatsapp_chat_id]) }}" 
                        class="rwa-conv-item {{ $activeConversation && $activeConversation->id === $conv->id ? 'rwa-active' : '' }}"
                        data-name="{{ strtolower($conv->display_name ?: '') }}"
                        data-phone="{{ $conv->phone }}">
@@ -146,7 +146,7 @@
 
                 <!-- Composer -->
                 <div class="rwa-composer">
-                    <form action="{{ route('rich-whatsapp.messages.send') }}" method="POST" enctype="multipart/form-data" class="rwa-composer-form">
+                    <form action="{{ route('admin.whatsapp.messages.send') }}" method="POST" enctype="multipart/form-data" class="rwa-composer-form">
                         @csrf
                         <input type="hidden" name="phone" value="{{ $activeConversation->phone }}">
                         
@@ -173,7 +173,7 @@
     <!-- Dialogs -->
     <dialog id="new-msg-dialog" class="rwa-dialog">
         <h3 style="margin-top: 0;">Start New Conversation</h3>
-        <form action="{{ route('rich-whatsapp.messages.send') }}" method="POST">
+        <form action="{{ route('admin.whatsapp.messages.send') }}" method="POST">
             @csrf
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 13px; color: var(--rwa-color-text-secondary); margin-bottom: 6px;">Phone Number</label>
@@ -195,7 +195,7 @@
         <p style="font-size: 14px; line-height: 1.5; color: var(--rwa-color-text-secondary);">Logging out will unlink this WhatsApp session and a new QR scan will be required. Are you sure you want to continue?</p>
         <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
             <button type="button" onclick="document.getElementById('logout-dialog').close();" class="rwa-button rwa-button-secondary">Cancel</button>
-            <form action="{{ route('rich-whatsapp.logout') }}" method="POST" style="display: inline;">
+            <form action="{{ route('admin.whatsapp.logout') }}" method="POST" style="display: inline;">
                 @csrf
                 <button type="submit" class="rwa-button rwa-button-danger">Logout</button>
             </form>

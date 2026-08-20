@@ -13,7 +13,7 @@
             <div class="rwa-logo-text">Rich WhatsApp</div>
         </div>
         <div style="display: flex; gap: 12px; align-items: center;">
-            <a href="{{ route('rich-whatsapp.dashboard') }}" class="rwa-button rwa-button-secondary">Back to Chats</a>
+            <a href="{{ route('admin.whatsapp.index') }}" class="rwa-button rwa-button-secondary">Back to Chats</a>
         </div>
     </header>
 

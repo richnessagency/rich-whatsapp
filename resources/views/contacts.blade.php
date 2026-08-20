@@ -24,7 +24,7 @@
             <div class="rwa-sidebar-profile" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background-color: rgba(255,255,255,0.03); border-bottom: 1px solid var(--rwa-border-color); flex-shrink: 0;">
                 <div class="rwa-conv-avatar" style="width: 38px; height: 38px; position: relative; overflow: hidden; background: var(--rwa-primary); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                     @if($session->phone)
-                        <img src="{{ route('rich-whatsapp.picture', ['jid' => $session->phone . '@s.whatsapp.net']) }}" 
+                        <img src="{{ route('admin.whatsapp.picture', ['jid' => $session->phone . '@s.whatsapp.net']) }}" 
                              alt="" 
                              style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
                              onerror="this.style.display='none';">
@@ -46,7 +46,7 @@
             </div>
 
             <div class="rwa-search-box">
-                <form action="{{ route('rich-whatsapp.contacts') }}" method="GET" style="display: flex; gap: 8px;">
+                <form action="{{ route('admin.whatsapp.contacts') }}" method="GET" style="display: flex; gap: 8px;">
                     <input type="text" name="q" value="{{ $currentQuery }}" class="rwa-search-input" placeholder="Search contacts...">
                     <button type="submit" class="rwa-button rwa-button-secondary" style="padding: 6px 12px;">Search</button>
                 </form>
@@ -54,9 +54,9 @@
 
             <div style="flex: 1; overflow-y: auto;">
                 @forelse($contacts->items as $contact)
-                    <a href="{{ route('rich-whatsapp.chat', ['jid' => $contact->jid]) }}" class="rwa-conv-item" style="display: flex; align-items: center;">
+                    <a href="{{ route('admin.whatsapp.chat', ['jid' => $contact->jid]) }}" class="rwa-conv-item" style="display: flex; align-items: center;">
                         <div class="rwa-conv-avatar" style="position: relative; overflow: hidden; background: #2a3942; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                            <img src="{{ route('rich-whatsapp.picture', ['jid' => $contact->jid]) }}" 
+                            <img src="{{ route('admin.whatsapp.picture', ['jid' => $contact->jid]) }}" 
                                  alt="" 
                                  style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;"
                                  onerror="this.style.display='none';">

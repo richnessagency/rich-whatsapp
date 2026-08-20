@@ -28,10 +28,10 @@ class DashboardController extends Controller
         $session = $this->service->sessionStatus();
 
         if ($session->status->isConnected()) {
-            return redirect()->route('rich-whatsapp.chats');
+            return redirect()->route('admin.whatsapp.chats');
         }
 
-        return redirect()->route('rich-whatsapp.connect');
+        return redirect()->route('admin.whatsapp.connect');
     }
 
     /** WhatsApp Web-style full-height chats list (live from the bridge). */
@@ -135,7 +135,7 @@ class DashboardController extends Controller
         $session = $this->service->sessionStatus();
 
         if ($session->status->isConnected()) {
-            return redirect()->route('rich-whatsapp.dashboard');
+            return redirect()->route('admin.whatsapp.index');
         }
 
         // Trigger session start on Node bridge
@@ -171,7 +171,7 @@ class DashboardController extends Controller
                 return response()->json(['success' => true]);
             }
 
-            return redirect()->route('rich-whatsapp.connect')->with('status', 'Logged out successfully.');
+            return redirect()->route('admin.whatsapp.connect')->with('status', 'Logged out successfully.');
         }
 
         return view('rich-whatsapp::logout');
@@ -230,7 +230,7 @@ class DashboardController extends Controller
 
         $chatId = $phone . '@s.whatsapp.net';
 
-        return redirect()->route('rich-whatsapp.chat', ['jid' => $chatId]);
+        return redirect()->route('admin.whatsapp.chat', ['jid' => $chatId]);
     }
 
     public function checkContact(Request $request)

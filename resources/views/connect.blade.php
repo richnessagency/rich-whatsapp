@@ -44,7 +44,7 @@
 
             <div style="margin-top: 32px; display: flex; justify-content: center; gap: 16px;">
                 <button onclick="window.location.reload();" class="rwa-button rwa-button-secondary">Refresh QR</button>
-                <form action="{{ route('rich-whatsapp.reconnect') }}" method="POST" style="display: inline;">
+                <form action="{{ route('admin.whatsapp.reconnect') }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="rwa-button">Force Reconnect</button>
                 </form>
@@ -53,9 +53,9 @@
     </main>
 
     <script>
-        const statusUrl = "{{ route('rich-whatsapp.status') }}";
-        const qrUrl = "{{ route('rich-whatsapp.qr') }}";
-        const dashboardUrl = "{{ route('rich-whatsapp.dashboard') }}";
+        const statusUrl = "{{ route('admin.whatsapp.status') }}";
+        const qrUrl = "{{ route('admin.whatsapp.qr') }}";
+        const dashboardUrl = "{{ route('admin.whatsapp.index') }}";
         const pollInterval = {{ $pollSeconds * 1000 }};
 
         async function checkStatus() {
