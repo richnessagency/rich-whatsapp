@@ -71,6 +71,13 @@
                                     <span class="rwa-conv-time">{{ (new DateTimeImmutable($chat->lastMessageAt))->format('H:i') }}</span>
                                 @endif
                             </div>
+                            @if($chat->isGroup)
+                                <div style="margin-top: 2px; font-size: 10.5px; font-family: monospace; color: var(--rwa-primary); cursor: pointer; text-align: left;" 
+                                     title="Click to copy Group ID"
+                                     onclick="event.preventDefault(); event.stopPropagation(); navigator.clipboard.writeText('{{ $chat->jid }}'); alert('Copied Group ID: {{ $chat->jid }}');">
+                                    🆔 {{ $chat->jid }} <span style="font-size: 9px; opacity: 0.6;">(copy)</span>
+                                </div>
+                            @endif
                             <div class="rwa-conv-header" style="margin-top: 2px;">
                                 <span class="rwa-conv-preview">
                                     {{ $chat->lastMessage ? $chat->lastMessage['from_me'] ? 'You: ' . ($chat->lastMessage['text'] ?? '📎') : ($chat->lastMessage['text'] ?? '📎') : 'No messages yet' }}
